@@ -1,10 +1,31 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { OrdersModule } from './orders/orders.module';
+import { ItemsModule } from './items/items.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { Item } from './items/entities/item.entity';
 
 @Module({
-  imports: [],
+  imports: [
+    //TODO Add this to a .env file and use nestjs configuration strategy asap
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      username: 'root',
+      password: 'root',
+      database: 'dev',
+      entities: [Item],
+      synchronize: true,
+    }),
+    OrdersModule,
+    ItemsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private dataSource: DataSource) {}
+}
