@@ -1,4 +1,4 @@
-import { Injectable, HttpException } from '@nestjs/common';
+import { Injectable, HttpException, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order } from './entities/order.entity';
@@ -54,7 +54,7 @@ export class OrdersService {
       const order = await this.orderRepository.findOneOrFail({ where: { id }, relations: ['orderItems'] });
       return order;
     } catch (error) {
-      throw new HttpException('Order not found', 404);
+      throw new NotFoundException('Order not found');
     }
   }
 
