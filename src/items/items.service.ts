@@ -7,12 +7,9 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class ItemsService {
-  constructor(
-    @InjectRepository(Item)
-    private itemsRepository: Repository<Item>,
-  ) {}
+  constructor(@InjectRepository(Item) private itemsRepository: Repository<Item>) {}
   create(createItemDto: CreateItemDto) {
-    return 'This action adds a new item';
+    return this.itemsRepository.save({ ...createItemDto });
   }
 
   findAll() {

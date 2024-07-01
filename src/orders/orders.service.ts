@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { Order } from './entities/order.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class OrdersService {
+  constructor(@InjectRepository(Order) private orderRepository: Repository<Order>) {}
   create(createOrderDto: CreateOrderDto) {
     return 'This action adds a new order';
   }
 
   findAll() {
-    return `This action returns all orders`;
+    return this.orderRepository.find({ relations: ['items'] });
   }
 
   findOne(id: number) {

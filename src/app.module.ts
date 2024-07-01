@@ -6,6 +6,7 @@ import { ItemsModule } from './items/items.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { Item } from './items/entities/item.entity';
+import { Order } from './orders/entities/order.entity';
 
 @Module({
   imports: [
@@ -16,8 +17,8 @@ import { Item } from './items/entities/item.entity';
       port: 3306,
       username: 'root',
       password: 'root',
-      database: 'dev',
-      entities: [Item],
+      database: 'restaurant',
+      entities: [Item, Order],
       synchronize: true,
     }),
     OrdersModule,
