@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { OrdersModule } from './orders/orders.module';
 import { ItemsModule } from './items/items.module';
@@ -8,7 +7,7 @@ import { DataSource } from 'typeorm';
 import { Item } from './items/entities/item.entity';
 import { Order } from './orders/entities/order.entity';
 import { OrderItems } from './entities/orderItems.entity';
-import { OrderStatusGateway } from './order-status/order-status.gateway';
+import { OrderStatusModule } from './order-status/order-status.module';
 
 @Module({
   imports: [
@@ -25,9 +24,10 @@ import { OrderStatusGateway } from './order-status/order-status.gateway';
     }),
     OrdersModule,
     ItemsModule,
+    OrderStatusModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, OrderStatusGateway],
+  controllers: [],
+  providers: [AppService],
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {}
