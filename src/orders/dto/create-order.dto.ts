@@ -4,11 +4,11 @@ import { ItemsOrderDto } from './items-order.dto';
 
 export class CreateOrderDto {
   @IsArray()
+  @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => ItemsOrderDto)
-  @ArrayMinSize(1)
   items: ItemsOrderDto[];
 
   @IsNotEmpty()
-  userName: string;
+  customer: string;
 }

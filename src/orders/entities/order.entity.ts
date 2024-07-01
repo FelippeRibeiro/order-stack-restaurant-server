@@ -10,13 +10,13 @@ export class Order {
   @Column({ nullable: false, type: 'varchar' })
   customer: string;
 
-  @Column({ enum: ['pending', 'done', 'cancelled'], default: 'pending', nullable: false, type: 'enum' })
-  status: 'pending' | 'done' | 'cancelled';
+  @Column({ enum: ['waitapproval', 'pending', 'done', 'cancelled'], default: 'waitapproval', nullable: false, type: 'enum' })
+  status: 'waitapproval' | 'pending' | 'done' | 'cancelled';
 
   @Column({ nullable: true, default: '' })
   note: string;
 
-  @Column()
+  @Column({ nullable: false, type: 'float', default: 0 })
   total: number;
 
   @CreateDateColumn()
