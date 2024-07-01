@@ -9,7 +9,8 @@ import { Repository } from 'typeorm';
 export class ItemsService {
   constructor(@InjectRepository(Item) private itemsRepository: Repository<Item>) {}
   create(createItemDto: CreateItemDto) {
-    return this.itemsRepository.save({ ...createItemDto });
+    const item = this.itemsRepository.create({ ...createItemDto });
+    return this.itemsRepository.save(item);
   }
 
   findAll() {
