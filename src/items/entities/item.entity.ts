@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Order } from 'src/orders/entities/order.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, IsNull } from 'typeorm';
 
 @Entity()
 export class Item {
@@ -8,7 +9,7 @@ export class Item {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ default: '', nullable: true })
   description: string;
 
   @Column()
@@ -17,12 +18,15 @@ export class Item {
   @Column()
   price: number;
 
-  @Column()
+  @Column({ default: '', nullable: true })
   imageUrl: string;
 
-  @Column()
+  @CreateDateColumn()
   createdAt: Date;
 
-  @Column()
+  @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(() => Order, (order) => order.items)
+  order: Order;
 }
