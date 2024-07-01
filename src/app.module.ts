@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { Item } from './items/entities/item.entity';
 import { Order } from './orders/entities/order.entity';
+import { OrderItems } from './entities/orderItems.entity';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { Order } from './orders/entities/order.entity';
       username: 'root',
       password: 'root',
       database: 'restaurant',
-      entities: [Item, Order],
+      entities: [Item, Order, OrderItems],
       synchronize: true,
     }),
     OrdersModule,

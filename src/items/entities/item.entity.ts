@@ -1,5 +1,5 @@
-import { Order } from 'src/orders/entities/order.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, IsNull } from 'typeorm';
+import { OrderItems } from 'src/entities/orderItems.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
 @Entity()
 export class Item {
@@ -27,6 +27,6 @@ export class Item {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Order, (order) => order.items)
-  order: Order;
+  @OneToMany(() => OrderItems, (orderItems) => orderItems.item)
+  orderItems: OrderItems[];
 }
