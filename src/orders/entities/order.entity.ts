@@ -6,6 +6,10 @@ export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
+  //TODO there will come the user informations
+  @Column({ nullable: false, type: 'varchar' })
+  customer: string;
+
   @Column({ enum: ['pending', 'done', 'cancelled'], default: 'pending', nullable: false, type: 'enum' })
   status: 'pending' | 'done' | 'cancelled';
 
