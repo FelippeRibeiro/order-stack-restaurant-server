@@ -13,9 +13,9 @@ export class OrderItems {
   @Column({ default: '', nullable: true })
   description: string;
 
-  @ManyToOne(() => Order, (order) => order.orderItems)
+  @ManyToOne(() => Order, (order) => order.orderItems, { cascade: true })
   order: Order; // Removido orderId, utilizando a entidade Order diretamente
 
-  @ManyToOne(() => Item, (item) => item.orderItems)
+  @ManyToOne(() => Item, (item) => item.orderItems, { cascade: true })
   item: Item; // Removido itemId, utilizando a entidade Item diretamente
 }

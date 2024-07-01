@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order } from './entities/order.entity';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderItems } from 'src/entities/orderItems.entity';
 import { Item } from 'src/items/entities/item.entity';
@@ -14,14 +14,48 @@ export class OrdersService {
     @InjectRepository(OrderItems) private orderItemsRepository: Repository<OrderItems>,
     @InjectRepository(Item) private itemsRepository: Repository<Item>,
   ) {}
-  async create(createOrderDto: CreateOrderDto) {}
+  async create(createOrderDto: CreateOrderDto) {
+    const { items, customer } = createOrderDto;
 
-  findAll() {
-    return this.orderRepository.find({ where: { id: 1 }, relations: ['orderItems'] });
+    const order = this.orderRepository.create({ customer });
+
+    const status: {
+      amount: number;
+      removedItems: { id: number; message: string }[];
+    } = {
+      amount: 0,
+      removedItems: [],
+    };
+    for (const item of items) {
+      const { id, qty, description } = item;
+      const selectedItem = await this.itemsRepository.findOne({ where: { id } });
+
+      if (!selectedItem || selectedItem.qty < qty) {
+        await this.orderItemsRepository.delete({ order: { id: order.id } });
+        await this.orderRepository.delete({ id: order.id });
+        throw new HttpException({ message: !selectedItem ? 'Item not found' : 'Not enough stock' }, 400);
+      }
+
+      selectedItem.qty -= qty;
+      await this.itemsRepository.save(selectedItem);
+      await this.orderItemsRepository.save({ qty, description, item: selectedItem, order });
+      status.amount += selectedItem.price * qty;
+    }
+
+    return this.orderRepository.save({ ...order, total: status.amount });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  findAll() {
+    return this.orderRepository.find({ relations: ['orderItems'] });
+  }
+
+  async findOne(id: number) {
+    try {
+      const order = await this.orderRepository.findOneOrFail({ where: { id }, relations: ['orderItems'] });
+      return order;
+    } catch (error) {
+      throw new HttpException('Order not found', 404);
+    }
   }
 
   update(id: number, updateOrderDto: UpdateOrderDto) {
