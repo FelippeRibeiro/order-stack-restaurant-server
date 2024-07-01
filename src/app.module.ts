@@ -8,6 +8,7 @@ import { DataSource } from 'typeorm';
 import { Item } from './items/entities/item.entity';
 import { Order } from './orders/entities/order.entity';
 import { OrderItems } from './entities/orderItems.entity';
+import { OrderStatusGateway } from './order-status/order-status.gateway';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { OrderItems } from './entities/orderItems.entity';
     ItemsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, OrderStatusGateway],
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {}
