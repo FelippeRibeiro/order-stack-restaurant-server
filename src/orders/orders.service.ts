@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderItems } from 'src/entities/orderItems.entity';
 import { Item } from 'src/items/entities/item.entity';
+import { OrderStatusGateway } from 'src/order-status/order-status.gateway';
 
 @Injectable()
 export class OrdersService {
@@ -13,6 +14,7 @@ export class OrdersService {
     @InjectRepository(Order) private orderRepository: Repository<Order>,
     @InjectRepository(OrderItems) private orderItemsRepository: Repository<OrderItems>,
     @InjectRepository(Item) private itemsRepository: Repository<Item>,
+    private orderStatusGateway: OrderStatusGateway,
   ) {}
   async create(createOrderDto: CreateOrderDto) {
     const { items, customer } = createOrderDto;
@@ -41,12 +43,14 @@ export class OrdersService {
       await this.orderItemsRepository.save({ qty, description, item: selectedItem, order });
       status.amount += selectedItem.price * qty;
     }
-
-    return this.orderRepository.save({ ...order, total: status.amount });
+    const newOrder = await this.orderRepository.save({ ...order, total: status.amount });
+    this.orderStatusGateway.emitNewOrder(newOrder.id);
+    return newOrder;
+    // return this.orderRepository.save({ ...order, total: status.amount });
   }
 
   findAll() {
-    return this.orderRepository.find({ relations: ['orderItems'] });
+    return this.orderRepository.find({ relations: { orderItems: { item: true } } });
   }
 
   async findOne(id: number) {

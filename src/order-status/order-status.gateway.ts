@@ -1,5 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Order } from 'src/orders/entities/order.entity';
 import { Repository } from 'typeorm';
@@ -15,12 +15,29 @@ export class OrderStatusGateway implements OnGatewayConnection, OnGatewayDisconn
   @WebSocketServer() server: Server;
   clients: Map<string, Socket> = new Map();
 
-  async handleConnection(client: Socket) {
-    this.server.emit('message', '1 cliente conectado');
+  async emitNewOrder(orderId: number) {
+    const order = await this.orderRepository.find({ where: { id: orderId }, relations: { orderItems: { item: true } } });
+    this.server.emit('ORDER-CREATED', order);
+  }
+
+  // @SubscribeMessage('orders')
+  // async handleOrders(client: Socket): Promise<string> {
+  //   const orders = await this.orderRepository.find({ relations: { orderItems: { item: true } } });
+
+  //   client.emit('orders', orders);
+
+  //   return 'ok';
+  // }
+
+  // @SubscribeMessage('message')
+  // handleEvent(@MessageBody('id') id: number): number {
+  //   return id;
+  // }
+
+  handleConnection(client: Socket) {
     this.clients.set(client.id, client);
   }
   handleDisconnect(client: Socket) {
     this.clients.delete(client.id);
-    this.server.emit('message', '1 cliente disconectado');
   }
 }
