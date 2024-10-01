@@ -32,3 +32,8 @@ import { OrderStatusModule } from './order-status/order-status.module';
 export class AppModule {
   constructor(private dataSource: DataSource) {}
 }
+
+//TODO reverter quantidade de itens caso o pedido seja cancelado (linha 43 e 44 do order.service)
+//TODO retirar a propriedade nome do items-orders-dto
+//TODO retornar o id do item que não tem em estoque e a quantidade em estoque
+//TODO validar se a quantidade de itens do pedido é maior que 0

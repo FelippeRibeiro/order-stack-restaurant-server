@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class ItemsService {
   constructor(@InjectRepository(Item) private itemsRepository: Repository<Item>) {}
+
   create(createItemDto: CreateItemDto) {
     const item = this.itemsRepository.create({ ...createItemDto });
     return this.itemsRepository.save(item);
@@ -18,14 +19,19 @@ export class ItemsService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} item`;
+    try {
+      const item = this.itemsRepository.findOneOrFail({ where: { id } });
+      return item;
+    } catch (error) {
+      throw new NotFoundException('Item not found');
+    }
   }
 
   update(id: number, updateItemDto: UpdateItemDto) {
-    return `This action updates a #${id} item`;
+    return this.itemsRepository.update(id, updateItemDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} item`;
+    return this.itemsRepository.delete({ id });
   }
 }
